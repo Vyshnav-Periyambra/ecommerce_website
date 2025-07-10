@@ -19,17 +19,17 @@ def create_default_users(sender, **kwargs):
         #     print("Owner user already exists.")
 
         # Create Customer
-        if not User.objects.filter(username='customer').exists():
-            customer = User.objects.create_user(username='customer', password='Customer@123')
-            Profile.objects.create(user=customer, role='customer')
-            # print("Customer user created.")
-        # else:
-        #     print("Customer user already exists.")
+        # if not User.objects.filter(username='customer').exists():
+        #     customer = User.objects.create_user(username='customer', password='Customer@123')
+        #     Profile.objects.create(user=customer, role='customer')
+        #     # print("Customer user created.")
+        # # else:
+        # #     print("Customer user already exists.")
 
-        # Create Supplier
-        if not User.objects.filter(username='supplier').exists():
-            supplier = User.objects.create_user(username='supplier', password='Supplier@123')
-            Profile.objects.create(user=supplier, role='supplier')
+        # # Create Supplier
+        # if not User.objects.filter(username='supplier').exists():
+        #     supplier = User.objects.create_user(username='supplier', password='Supplier@123')
+        #     Profile.objects.create(user=supplier, role='supplier')
             # print("Supplier user created.")
         # else:
         #     print("Supplier user already exists.")
