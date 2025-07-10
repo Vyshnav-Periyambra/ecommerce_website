@@ -14,7 +14,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("SECRET_KEY", "django-insecure-a-c+_q7w!_r89m+rfy!d&@u(xcot9gx6e)z*8!u(oqi+khm0wh")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv("DEBUG", "False") == "True"
+DEBUG = True
+# os.getenv("DEBUG", "False") == "True"
 
 # Allow Render’s internal hostname and localhost
 ALLOWED_HOSTS = [
