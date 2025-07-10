@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block title %}Signup{% endblock %}
+
+{% block content %}
+<div class="flex justify-center items-center" style="min-height: 90vh;">
+    <form method="POST" class="form-card" novalidate>
+        {% csrf_token %}
+        <h2 class="text-center">Signup</h2>
+
+        <input type="text" name="username" placeholder="Username" required />
+        <input type="password" name="password" placeholder="Password" required />
+
+        <select name="role" id="role" required>
+            <option value="customer" selected>Customer</option>
+            <option value="supplier">Supplier</option>
+        </select>
+
+        <div id="supplier-fields" class="role-fields">
+            <input type="text" name="supplier_name" placeholder="Supplier Name" />
+            <input type="text" name="supplier_company" placeholder="Supplier Company" />
+            <input type="text" name="supplier_contact" placeholder="Supplier Contact Number" />
+            <input type="email" name="supplier_email" placeholder="Supplier Email" />
+        </div>
+
+        <div id="customer-fields" class="role-fields">
+            <input type="text" name="customer_full_name" placeholder="Full Name" />
+            <input type="text" name="customer_phone" placeholder="Phone Number" />
+            <input type="email" name="customer_email" placeholder="Email Address" />
+        </div>
+
+        <button type="submit">Signup</button>
+
+        <p class="text-center mt-20">Already have an account? <a href="{% url 'login' %}">Login here</a></p>
+    </form>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const roleSelect = document.getElementById('role');
+    const supplierFields = document.getElementById('supplier-fields');
+    const customerFields = document.getElementById('customer-fields');
+
+    function toggleRequiredFields(role) {
+        const supplierInputs = supplierFields.querySelectorAll('input');
+        const customerInputs = customerFields.querySelectorAll('input');
+
+        supplierInputs.forEach(input => input.required = (role === 'supplier'));
+        customerInputs.forEach(input => input.required = (role === 'customer'));
+    }
+
+    function showFieldsForRole(role) {
+        supplierFields.style.display = 'none';
+        customerFields.style.display = 'none';
+
+        if (role === 'supplier') {
+            supplierFields.style.display = 'block';
+        } else {
+            customerFields.style.display = 'block';
+        }
+
+        toggleRequiredFields(role);
+    }
+
+    // Initialize on page load
+    showFieldsForRole(roleSelect.value);
+
+    // Update on role change
+    roleSelect.addEventListener('change', () => {
+        showFieldsForRole(roleSelect.value);
+    });
+</script>
+<style>
+    .form-card {
+        background: #fff;
+        padding: 40px;
+        border-radius: 10px;
+        box-shadow: 0 6px 30px rgba(0, 0, 0, 0.1);
+        max-width: 450px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    .form-card h2 {
+        color: #34495e;
+        margin-bottom: 25px;
+        font-size: 2em;
+        font-weight: 700;
+    }
+    .role-fields {
+        margin-bottom: 5px; /* Adjust spacing between role groups */
+    }
+    /* Customer fields shown by default via JS, hidden by default by CSS */
+    #customer-fields, #supplier-fields {
+        display: none;
+    }
+</style>
+{% endblock %}

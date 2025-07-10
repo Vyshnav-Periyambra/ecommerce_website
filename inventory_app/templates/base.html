@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}My App{% endblock %}</title>
+    <style>
+        /* Base Styles - Apply to all pages */
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7f6;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 30px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid #eee;
+            margin: 20px 0;
+        }
+
+        /* --- Global Form Styles --- */
+        input[type="text"],
+        input[type="password"],
+        input[type="email"],
+        input[type="number"],
+        input[type="url"],
+        input[type="date"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px 15px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 1rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus,
+        input[type="email"]:focus,
+        input[type="number"]:focus,
+        input[type="url"]:focus,
+        input[type="date"]:focus,
+        select:focus,
+        textarea:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
+            outline: none;
+        }
+
+        button[type="submit"] {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.05rem;
+            transition: background-color 0.3s ease;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        a {
+            color: #007bff;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        a:hover {
+            color: #0056b3;
+            text-decoration: underline;
+        }
+
+        /* --- Toast Notifications --- */
+        #toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1050; /* Above most other content */
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none; /* Allows clicks to pass through container */
+        }
+
+        .toast-item {
+            background-color: #333;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 5px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+            opacity: 0.95;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            min-width: 250px;
+            max-width: 350px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            pointer-events: all; /* Make toast clickable */
+        }
+
+        .toast-item.success { background-color: #28a745; } /* Green */
+        .toast-item.error, .toast-item.danger { background-color: #dc3545; } /* Red */
+        .toast-item.warning { background-color: #ffc107; color: #333;} /* Yellow */
+        .toast-item.info { background-color: #17a2b8; } /* Cyan */
+
+        .toast-close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5em;
+            cursor: pointer;
+            line-height: 1;
+            margin-left: 10px;
+            opacity: 0.8;
+            transition: opacity 0.2s ease;
+        }
+        .toast-item.warning .toast-close-btn { color: #333; } /* Darker close for warnings */
+
+        .toast-close-btn:hover {
+            opacity: 1;
+        }
+
+        /* Animation for toasts */
+        @keyframes slideInFromRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 0.95;
+            }
+        }
+        .toast-item {
+            animation: slideInFromRight 0.5s ease-out;
+        }
+
+        /* Utility classes */
+        .text-center { text-align: center; }
+        .mt-20 { margin-top: 20px; }
+        .mb-20 { margin-bottom: 20px; }
+        .flex { display: flex; }
+        .justify-center { justify-content: center; }
+        .items-center { align-items: center; }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .container {
+                margin: 20px auto;
+                padding: 15px;
+            }
+            #toast-container {
+                bottom: 10px;
+                right: 10px;
+                left: 10px; /* Stack on mobile */
+                width: auto;
+            }
+            .toast-item {
+                max-width: 100%;
+                min-width: unset;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="django-messages" style="display: none;">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="hidden-message" data-tags="{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <div id="toast-container"></div>
+
+    {% block content %}{% endblock %}
+
+    <script>
+        // Function to show toast messages
+        function showToast(message, type = 'info') { // Default type to info
+            const toastContainer = document.getElementById('toast-container');
+            if (!toastContainer) {
+                console.error('Toast container not found!');
+                return;
+            }
+
+            const toast = document.createElement('div');
+            toast.classList.add('toast-item');
+            if (type) {
+                toast.classList.add(type);
+            }
+            toast.innerHTML = `
+                <div class="toast-body">${message}</div>
+                <button type="button" class="toast-close-btn" aria-label="Close">&times;</button>
+            `;
+
+            toastContainer.appendChild(toast);
+
+            // Auto-hide after 5 seconds
+            const timeout = setTimeout(() => {
+                toast.remove();
+            }, 5000); // 5000 milliseconds = 5 seconds
+
+            // Close button functionality
+            toast.querySelector('.toast-close-btn').addEventListener('click', () => {
+                clearTimeout(timeout); // Prevent auto-hide if manually closed
+                toast.remove();
+            });
+
+            // Optional: Hide toast on click anywhere
+            toast.addEventListener('click', () => {
+                clearTimeout(timeout);
+                toast.remove();
+            });
+        }
+
+        // Display Django messages as toasts on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            const messagesElement = document.getElementById('django-messages');
+            if (messagesElement) {
+                messagesElement.querySelectorAll('.hidden-message').forEach(msgDiv => {
+                    const message = msgDiv.textContent.trim();
+                    // Django message tags might be space-separated (e.g., 'success debug')
+                    // We take the first one or 'info' as a fallback for toast styling
+                    const tags = msgDiv.dataset.tags ? msgDiv.dataset.tags.split(' ')[0] : 'info';
+                    showToast(message, tags);
+                });
+                // Clear the hidden messages after they've been displayed as toasts
+                messagesElement.innerHTML = '';
+            }
+        });
+    </script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

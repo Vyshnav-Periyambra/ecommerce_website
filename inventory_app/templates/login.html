@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="flex justify-center items-center" style="min-height: 90vh;">
+    <form method="POST" class="form-card">
+        {% csrf_token %}
+        <h2 class="text-center">Login</h2>
+        {% if error %}
+            <p class="error-message">{{ error }}</p>
+        {% endif %}
+        <input type="text" name="username" placeholder="Username" required>
+        <input type="password" name="password" placeholder="Password" required>
+        <button type="submit">Login</button>
+        <p class="hint">
+                Hint: Try 'owner'/'Owner@123', 'supplier'/'Supplier@123', 'customer'/'Customer@123'
+            </p>
+        <p class="text-center mt-20">New user? <a href="{% url 'signup' %}">Signup here</a></p>
+    </form>
+</div>
+
+<style>
+  .hint{
+    color: #6c757d;
+    font-size: 0.8em;
+    margin-top: 10px;
+    text-align: center;
+  }
+    .form-card {
+        background: #fff;
+        padding: 40px;
+        border-radius: 10px;
+        box-shadow: 0 6px 30px rgba(0, 0, 0, 0.1);
+        max-width: 400px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    .form-card h2 {
+        color: #34495e;
+        margin-bottom: 25px;
+        font-size: 2em;
+        font-weight: 700;
+    }
+    .form-card input[type="text"],
+    .form-card input[type="password"] {
+        margin-bottom: 20px;
+    }
+    .error-message {
+        color: #dc3545;
+        background-color: #f8d7da;
+        border: 1px solid #f5c6cb;
+        padding: 10px;
+        border-radius: 5px;
+        margin-bottom: 15px;
+        text-align: center;
+    }
+</style>
+{% endblock %}
